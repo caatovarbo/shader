@@ -6,16 +6,23 @@ precision mediump int;
 uniform sampler2D texture;
 uniform vec2 texOffset;
 
+uniform float light;
+uniform float shrp;
+
 varying vec4 vertColor;
 varying vec4 vertTexCoord;
+
+//2 1 0
+//5 4 3
+//8 7 6
 
 void main() {
   vec2 tc0 = vertTexCoord.st + vec2(-texOffset.s, -texOffset.t);
   vec2 tc1 = vertTexCoord.st + vec2(         0.0, -texOffset.t);
   vec2 tc2 = vertTexCoord.st + vec2(+texOffset.s, -texOffset.t);
-  vec2 tc3 = vertTexCoord.st + vec2(-texOffset.s,          0.0);
-  vec2 tc4 = vertTexCoord.st + vec2(         0.0,          0.0);
-  vec2 tc5 = vertTexCoord.st + vec2(+texOffset.s,          0.0);
+  vec2 tc3 = vertTexCoord.st + vec2(-texOffset.s,          0.0); //Left Center
+  vec2 tc4 = vertTexCoord.st + vec2(         0.0,          0.0); //Center Center
+  vec2 tc5 = vertTexCoord.st + vec2(+texOffset.s,          0.0); //Right Center
   vec2 tc6 = vertTexCoord.st + vec2(-texOffset.s, +texOffset.t);
   vec2 tc7 = vertTexCoord.st + vec2(         0.0, +texOffset.t);
   vec2 tc8 = vertTexCoord.st + vec2(+texOffset.s, +texOffset.t);
@@ -30,7 +37,7 @@ void main() {
   vec4 col7 = texture2D(texture, tc7);
   vec4 col8 = texture2D(texture, tc8);
 
-  vec4 sum = - (col1 + col3 + col5 + col7) + 5 * col4;
-  
+  vec4 sum = shrp * (col0 + col1 + col2 + col3 + col5 + col6 + col7 +col8) + light*col4;
+
   gl_FragColor = vec4(sum.rgb, 1.0) * vertColor;
 }
