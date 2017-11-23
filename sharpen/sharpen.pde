@@ -1,6 +1,10 @@
 // Texture from Jason Liebig's FLICKR collection of vintage labels and wrappers:
 // http://www.flickr.com/photos/jasonliebigstuff/3739263136/in/photostream/
 
+import processing.video.*;
+
+Capture cam;
+
 PImage label;
 PShape can;
 float angle;
@@ -20,6 +24,23 @@ void setup() {
   label = loadImage("casa.jpg");
   //can = createCan(100, 200, 32, label);
   filter = loadShader("filters.glsl");
+  
+  String[] cameras = Capture.list();
+  
+  if (cameras.length == 0) {
+    println("There are no cameras available for capture.");
+    exit();
+  } else {
+    println("Available cameras:");
+    for (int i = 0; i < cameras.length; i++) {
+      println(cameras[i]);
+    }
+    
+    // The camera can be initialized directly using an 
+    // element from the array returned by list():
+    cam = new Capture(this, cameras[0]);
+    cam.start();     
+  }
 }
 
 void draw() {    
@@ -28,7 +49,10 @@ void draw() {
   if(show_image){
     image(label, 0, 0);
   }else{
-    image(label, 0, 0);
+    if (cam.available() == true) {
+        cam.read();
+    }
+    image(cam, 0, 0);
   }
   
   if(applyFilter){
@@ -110,6 +134,10 @@ void keyPressed() {
   }
    if(key == 'f' || key == 'F'){
     show_filters = !show_filters;
+  }
+  
+  if(key == 'c' || key == 'C'){
+    show_image = !show_image;
   }
 }
 
